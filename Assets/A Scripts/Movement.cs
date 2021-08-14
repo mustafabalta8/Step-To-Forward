@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-
+    
     [SerializeField] float HorizontalRotation;
     [SerializeField] float ThrustForce;
+    [SerializeField] AudioClip mainEngine;
+    [SerializeField] ParticleSystem mainEngineParticles;
 
     AudioSource audioSource;
     Rigidbody rg;
@@ -28,16 +30,7 @@ public class Movement : MonoBehaviour
     private void ProcessInput()
     {
         // process thrust
-        if (Input.GetKey(KeyCode.Space))
-        {
-            rg.AddRelativeForce(Vector3.up*Time.deltaTime* ThrustForce);
-            if(!audioSource.isPlaying)
-            audioSource.Play();
-        }
-        else
-        {
-            audioSource.Stop();
-        }
+        ProcessThrust();
         // process rotation
         if (Input.GetKey(KeyCode.A))
         {
@@ -54,5 +47,21 @@ public class Movement : MonoBehaviour
         transform.Rotate(Vector3.forward * horizontalRotation * Time.deltaTime);
         //rg.freezeRotation = false;//unfreezing rotation so physics system can take over
         rg.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
+    }
+    void ProcessThrust()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rg.AddRelativeForce(Vector3.up * Time.deltaTime * ThrustForce);
+            if (!audioSource.isPlaying)
+                audioSource.PlayOneShot(mainEngine);
+
+            mainEngineParticles.Play();
+        }
+        else
+        {
+            audioSource.Stop();
+            mainEngineParticles.Stop();
+        }
     }
 }
